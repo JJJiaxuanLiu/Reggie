@@ -137,6 +137,12 @@ public class SetmealController {
     }
 
 
+    /**
+     * 更新套餐售卖状态
+     * @param status
+     * @param ids
+     * @return
+     */
     @PostMapping("/status/{status}")
     public R<String> updateStatus(@PathVariable int status, @RequestParam List<Long> ids){
         log.info("ids:{}",ids);
