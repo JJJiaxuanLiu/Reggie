@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -78,7 +79,7 @@ public class AddressBookController {
     }
 
     /**
-     * 根据id获取地址
+     * 修改时，根据id获取地址，完成回显
      * @param id
      * @return
      */
@@ -93,6 +94,31 @@ public class AddressBookController {
     }
 
 
+    /**
+     * 修改地址
+     * @param addressBook
+     * @return
+     */
+    @PutMapping
+    public R<String> updateAddress(@RequestBody AddressBook addressBook){
+
+        addressBookService.updateById(addressBook);
+        return R.success("修改地址成功！");
+    }
+
+
+    /**
+     * 根据id删除地址
+     * @param id
+     * @return
+     */
+    @DeleteMapping
+    public R<String> deleteAddress( @RequestParam Long id){
+        log.info("id = {}",id);
+        addressBookService.removeById(id);
+
+        return R.success("地址删除成功！");
+    }
 
 
 }
