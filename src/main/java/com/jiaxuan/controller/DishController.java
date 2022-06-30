@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jiaxuan.common.R;
 import com.jiaxuan.domain.Category;
 import com.jiaxuan.domain.Dish;
+import com.jiaxuan.domain.DishFlavor;
 import com.jiaxuan.dto.DishDto;
 import com.jiaxuan.service.CategoryService;
 import com.jiaxuan.service.DishFlavorService;
@@ -154,13 +155,36 @@ public class DishController {
         return R.success("菜品状态修改成功！");
     }
 
+//    /**
+//     * 根据条件查询对应菜品数据
+//     * @param dish
+//     * @return
+//     */
+//    @GetMapping("/list")
+//    public R<List<Dish>> list(Dish dish){
+//        //构造查询条件
+//        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+//        queryWrapper.eq(dish.getCategoryId()!=null, Dish::getCategoryId,dish.getCategoryId());
+//        //status==1表示起售状态的菜品
+//        queryWrapper.eq(Dish::getStatus,1);
+//        //排序条件
+//        queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+//
+//        List<Dish> dishList = dishService.list(queryWrapper);
+//        return R.success(dishList);
+//    }
+
+
+
+
+
     /**
-     * 根据条件查询对应菜品数据
+     * 根据条件查询对应菜品数据，因为用户页面要展示口味信息，返回dish不能满足，改为返回dishdto的list集合
      * @param dish
      * @return
      */
     @GetMapping("/list")
-    public R<List<Dish>> list(Dish dish){
+    public R<List<DishDto>> list(Dish dish){
         //构造查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(dish.getCategoryId()!=null, Dish::getCategoryId,dish.getCategoryId());
@@ -170,14 +194,26 @@ public class DishController {
         queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
 
         List<Dish> dishList = dishService.list(queryWrapper);
-        return R.success(dishList);
+
+        //将dish中其他属性复制到dishdto中，根据dishid在dishflavor中查询对应口味信息
+        List<DishDto> dishDtoList = dishList.stream().map((item) ->{
+            DishDto dishDto = new DishDto();
+            BeanUtils.copyProperties(item,dishDto);
+
+            //根据dishid在dishflavor中查询对应口味信息
+            Long dishId = item.getId();
+            LambdaQueryWrapper<DishFlavor> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(dishId != null,DishFlavor::getDishId,dishId);
+            List<DishFlavor> dishFlavors = dishFlavorService.list(wrapper);
+
+            //将查询到的dishflavor的list集合放入dishdto中
+            dishDto.setFlavors(dishFlavors);
+
+            return dishDto;
+        }).collect(Collectors.toList());
+
+        return R.success(dishDtoList);
     }
-
-
-
-
-
-
 
 
 
