@@ -120,4 +120,16 @@ public class AddressBookController {
     }
 
 
+    /**
+     * 获取默认地址，在确认订单时调用
+     * @return
+     */
+    @GetMapping("/default")
+    public R<AddressBook> getDefaultAddress(){
+
+        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AddressBook::getIsDefault,1);
+        AddressBook one = addressBookService.getOne(queryWrapper);
+        return R.success(one);
+    }
 }
