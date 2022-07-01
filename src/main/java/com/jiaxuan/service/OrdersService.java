@@ -30,4 +30,11 @@ public interface OrdersService extends IService<Orders> {
     Page backendPage(int page, int pageSize);
 
 
+    /**
+     * 再来一单
+     * @param orders
+     */
+    void again(Orders orders);
+
 }
+

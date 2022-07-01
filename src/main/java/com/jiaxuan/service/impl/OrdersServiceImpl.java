@@ -11,6 +11,7 @@ import com.jiaxuan.domain.*;
 import com.jiaxuan.dto.OrdersDto;
 import com.jiaxuan.mapper.OrdersMapper;
 import com.jiaxuan.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> implements OrdersService {
 
     @Autowired
@@ -181,6 +183,42 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         //分页查询
         this.page(ordersPage,queryWrapper);
         return ordersPage;
+    }
+
+    /**
+     * 再来一单
+     * @param orders
+     */
+    @Override
+    public void again(Orders orders) {
+        //获取order的id，通过id将订单中的菜品或套餐信息加入购物车
+        log.info("orders:{}",orders);
+
+        Orders orders1 = this.getById(orders);
+        String orderNumber = orders1.getNumber();
+
+        //在orderdetial中通过订单号查找
+        LambdaQueryWrapper<OrderDetail> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderDetail::getOrderId,orderNumber);
+        List<OrderDetail> orderDetailList = orderDetailService.list(queryWrapper);
+
+        List<ShoppingCart> shoppingCartList = orderDetailList.stream().map((item) -> {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            shoppingCart.setName(item.getName());
+            shoppingCart.setImage(item.getImage());
+            shoppingCart.setUserId(BaseContext.getCurrentId());
+            shoppingCart.setDishId(item.getDishId()==null ? null : item.getDishId());
+            shoppingCart.setSetmealId(item.getSetmealId()==null ? null : item.getSetmealId());
+            shoppingCart.setDishFlavor(item.getDishFlavor());
+            shoppingCart.setNumber(item.getNumber());
+            shoppingCart.setAmount(item.getAmount());
+            shoppingCart.setCreateTime(LocalDateTime.now());
+            return shoppingCart;
+        }).collect(Collectors.toList());
+
+
+        shoppingCartService.saveBatch(shoppingCartList);
+
     }
 
 
