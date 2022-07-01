@@ -2,10 +2,10 @@ package com.jiaxuan.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.jiaxuan.common.BaseContext;
 import com.jiaxuan.common.R;
 import com.jiaxuan.domain.User;
 import com.jiaxuan.service.UserService;
-import com.jiaxuan.utils.SMSUtils;
 import com.jiaxuan.utils.ValidateCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -94,5 +95,13 @@ public class UserController {
     }
 
 
+
+    @PostMapping("/loginout")
+    public R<String> loginOut(HttpServletRequest request){
+
+        //清理服务端用户session
+        request.getSession().removeAttribute("user");
+        return R.success("用户退出成功！");
+    }
 
 }
