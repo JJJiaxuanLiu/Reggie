@@ -19,4 +19,15 @@ public interface OrdersService extends IService<Orders> {
      * @param pageSize
      */
     Page page(int page, int pageSize);
+
+
+    /**
+     * 后端订单分页查询
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    Page backendPage(int page, int pageSize);
+
+
 }

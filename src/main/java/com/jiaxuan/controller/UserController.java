@@ -86,6 +86,7 @@ public class UserController {
                 user = new User();
                 user.setPhone(phone);
                 user.setStatus(1);
+                user.setName("默认"+phone);
                 userService.save(user);
             }
             session.setAttribute("user",user.getId());
@@ -95,7 +96,11 @@ public class UserController {
     }
 
 
-
+    /**
+     * 用户退出
+     * @param request
+     * @return
+     */
     @PostMapping("/loginout")
     public R<String> loginOut(HttpServletRequest request){
 

@@ -35,7 +35,7 @@ public class OrdersController {
 
 
     /**
-     * 订单分页查询
+     * 用户订单分页查询
      * @param page
      * @param pageSize
      * @return
@@ -49,6 +49,49 @@ public class OrdersController {
 
         return R.success(page1);
     }
+
+
+    /**
+     * 后台订单分页查询
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/page")
+    public R<Page> backendPage(int page, int pageSize){
+        log.info("page:{}",page);
+        log.info("pageSize:{}",pageSize);
+
+
+        Page page1 = ordersService.backendPage(page, pageSize);
+        return R.success(page1);
+
+    }
+
+
+    /**
+     * 后台派送状态更新
+     * @param orders
+     * @return
+     */
+    @PutMapping
+    public R<String> updateStatus(@RequestBody Orders orders){
+        //更改状态为status
+        ordersService.updateById(orders);
+        return R.success("已更新配送！");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

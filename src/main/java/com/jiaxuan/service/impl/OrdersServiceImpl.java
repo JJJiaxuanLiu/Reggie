@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.jiaxuan.common.BaseContext;
 import com.jiaxuan.common.CustomException;
 import com.jiaxuan.domain.*;
@@ -117,6 +118,9 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
      * @param pageSize
      */
     public Page page(int page, int pageSize) {
+        //获取当前用户id
+        long userId = BaseContext.getCurrentId();
+
         //分页构造器
         Page<Orders> ordersPage = new Page<>(page,pageSize);
 
@@ -124,6 +128,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
 
         //查询条件
+        queryWrapper.eq(Orders::getUserId,userId);
         queryWrapper.orderByDesc(Orders::getCheckoutTime);
 
         //分页查询
@@ -154,6 +159,28 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 
         ordersDtoPage.setRecords(ordersDtoList);
         return ordersDtoPage;
+    }
+
+    /**
+     * 后端订单分页查询
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public Page backendPage(int page, int pageSize) {
+        //分页构造器
+        Page<Orders> ordersPage = new Page<>(page, pageSize);
+
+        //条件构造器
+        LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
+
+        //查询条件
+        queryWrapper.orderByDesc(Orders::getCheckoutTime);
+
+        //分页查询
+        this.page(ordersPage,queryWrapper);
+        return ordersPage;
     }
 
 

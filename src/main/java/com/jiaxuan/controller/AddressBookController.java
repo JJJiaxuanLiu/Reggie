@@ -3,6 +3,7 @@ package com.jiaxuan.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.jiaxuan.common.BaseContext;
 import com.jiaxuan.common.R;
 import com.jiaxuan.domain.AddressBook;
@@ -127,7 +128,11 @@ public class AddressBookController {
     @GetMapping("/default")
     public R<AddressBook> getDefaultAddress(){
 
+        //获取用户id
+        long currentId = BaseContext.getCurrentId();
+
         LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AddressBook::getUserId,currentId);
         queryWrapper.eq(AddressBook::getIsDefault,1);
         AddressBook one = addressBookService.getOne(queryWrapper);
         return R.success(one);
