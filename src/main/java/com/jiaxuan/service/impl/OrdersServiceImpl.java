@@ -2,12 +2,15 @@ package com.jiaxuan.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jiaxuan.common.BaseContext;
 import com.jiaxuan.common.CustomException;
 import com.jiaxuan.domain.*;
+import com.jiaxuan.dto.OrdersDto;
 import com.jiaxuan.mapper.OrdersMapper;
 import com.jiaxuan.service.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +73,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         List<OrderDetail> orderDetailList = shoppingCartList.stream().map((item) -> {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(ordersNumber);
+            orderDetail.setName(item.getName());
             orderDetail.setNumber(item.getNumber());
             orderDetail.setDishFlavor(item.getDishFlavor());
             orderDetail.setDishId(item.getDishId());
@@ -105,6 +109,51 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         //清空购物车
         shoppingCartService.remove(queryWrapper);
 
+    }
+
+    /**
+     * 分页查询
+     * @param page
+     * @param pageSize
+     */
+    public Page page(int page, int pageSize) {
+        //分页构造器
+        Page<Orders> ordersPage = new Page<>(page,pageSize);
+
+        //条件构造器
+        LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
+
+        //查询条件
+        queryWrapper.orderByDesc(Orders::getCheckoutTime);
+
+        //分页查询
+        this.page(ordersPage,queryWrapper);
+
+        //对象拷贝，order对象中没有菜品名称信息，所以需要orderdto的orderdetial中的list集合中获取名称信息
+        Page<OrdersDto> ordersDtoPage = new Page<>();
+        BeanUtils.copyProperties(ordersPage,ordersDtoPage,"records");
+
+        List<Orders> records = ordersPage.getRecords();
+
+        List<OrdersDto> ordersDtoList = records.stream().map((item) -> {
+            OrdersDto ordersDto = new OrdersDto();
+            BeanUtils.copyProperties(item, ordersDto);
+
+            //通过orderid将orderdetial的list集合加入orderdto
+            String orderId = item.getNumber();
+            LambdaQueryWrapper<OrderDetail> queryWrapper1 = new LambdaQueryWrapper<>();
+            queryWrapper1.eq(OrderDetail::getOrderId,orderId);
+            List<OrderDetail> list = orderDetailService.list(queryWrapper1);
+
+            ordersDto.setOrderDetails(list);
+
+            return ordersDto;
+
+        }).collect(Collectors.toList());
+
+
+        ordersDtoPage.setRecords(ordersDtoList);
+        return ordersDtoPage;
     }
 
 
