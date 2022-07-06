@@ -15,6 +15,8 @@ import com.jiaxuan.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,6 +51,7 @@ public class SetmealController {
      * @return
      */
     @PostMapping
+    @CacheEvict(value = "setmealCache",allEntries = true) //删除缓存
     public R<String> save(@RequestBody SetmealDto setmealDto){
 
         setmealService.saveWithDish(setmealDto);
@@ -143,6 +146,7 @@ public class SetmealController {
      * @return
      */
     @DeleteMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)  //删除所有套餐缓存
     public R<String> delete(@RequestParam List<Long> ids){
         log.info("ids{}",ids);
         setmealService.removeWithDishes(ids);
@@ -157,6 +161,7 @@ public class SetmealController {
      * @return
      */
     @PostMapping("/status/{status}")
+    @CacheEvict(value = "setmealCache",allEntries = true)   //删除所有套餐缓存
     public R<String> updateStatus(@PathVariable int status, @RequestParam List<Long> ids){
         log.info("ids:{}",ids);
         setmealService.updateStatus(status,ids);
@@ -181,27 +186,16 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId + '_' + #setmeal.status")  //查看缓存中是否存在，不存在则放入缓存
     public R<List<Setmeal>> list(Setmeal setmeal){
 
-        String key = "setmeal_"+setmeal.getCategoryId()+"_1";
-        //在redis中查询缓存
-        List<Setmeal> list = (List<Setmeal>) redisTemplate.opsForValue().get(key);
-
-        //如果存在，就可以直接返回
-        if(list != null){
-            return R.success(list);
-        }
-
-        //如果不存在，先查询，放入缓存
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(setmeal.getCategoryId() != null,Setmeal::getCategoryId,setmeal.getCategoryId());
         queryWrapper.eq(Setmeal::getStatus,1);
         queryWrapper.orderByDesc(Setmeal::getUpdateTime);
 
-        list = setmealService.list(queryWrapper);
+        List<Setmeal> list = setmealService.list(queryWrapper);
 
-        //放入缓存
-        redisTemplate.opsForValue().set(key,list,60L, TimeUnit.MINUTES);
 
         return R.success(list);
 

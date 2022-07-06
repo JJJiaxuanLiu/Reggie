@@ -148,6 +148,7 @@ public class DishController {
     public R<String> delete(String ids){
         log.info("删除菜品和口味");
         dishService.deleteByIdWithFlavor(ids);
+
         return R.success("删除菜品成功!");
     }
 
