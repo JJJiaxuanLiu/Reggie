@@ -3,13 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="22be465e-7019-40e5-90a6-17dae907f3a2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reggie_take_out.iml" beforeDir="false" afterPath="$PROJECT_DIR$/reggie_take_out.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jiaxuan/ReggieTakeOutApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jiaxuan/ReggieTakeOutApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jiaxuan/common/R.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jiaxuan/common/R.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jiaxuan/controller/DishController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jiaxuan/controller/DishController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jiaxuan/controller/SetmealController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jiaxuan/controller/SetmealController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +130,8 @@
       <workItem from="1656657245110" duration="23300000" />
       <workItem from="1656997169161" duration="1915000" />
       <workItem from="1657093835972" duration="10112000" />
-      <workItem from="1657112173297" duration="1437000" />
+      <workItem from="1657112173297" duration="2032000" />
+      <workItem from="1657173418394" duration="2212000" />
     </task>
     <servers />
   </component>
